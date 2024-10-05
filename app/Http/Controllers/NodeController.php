@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Node;
+use App\Models\Background;
 use App\Models\Graph;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
@@ -87,6 +87,16 @@ class NodeController extends Controller
         $user = Auth::user();
 
         return response()->json(['progress' => $user->game_progress]);
+    }
+
+
+    public function characterSelect()
+    {
+        $backstories = Background::all(); // Fetching all background characters from DB
+        return Inertia::render('Adventure/characterSelector', [
+            'title' => 'Character Creator',
+            'backstories' => $backstories, // Passing to Vue component
+        ]);
     }
 
 }

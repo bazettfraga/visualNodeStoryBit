@@ -14,13 +14,7 @@ Route::get('/page/{i}', [HomeController::class, 'show']);
 
 Route::get('/', function () {
     return Inertia::render('Dashboard');
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
-});
+})->middleware(['auth', 'verified'])->name('dashboard');
 
 
 Route::get('/dashboard', function () {
@@ -33,6 +27,7 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
+    Route::get('/characterSelect', [NodeController::class, 'characterSelect'])->name('view.characterSelect');
     Route::get('/adventure', [NodeController::class, 'view'])->name('view.adventure');
     Route::post('/save-progress', [NodeController::class, 'saveProgress'])->name('view.saveProgress');
     Route::get('/load-progress', [NodeController::class, 'loadProgress'])->name('view.loadProgress');
