@@ -51,9 +51,6 @@ const props = defineProps({
 });
 //menu states.
 const showOptionsMenu = ref(false);
-const volume = ref(getCookie('volume') ? parseFloat(getCookie('volume')) : 1); // Default to 100% if cookie doesn't exist
-const musicVolume = ref(getCookie('musicVolume') ? parseFloat(getCookie('musicVolume')) : 1); // Default to 100%
-const ambienceVolume = ref(getCookie('ambienceVolume') ? parseFloat(getCookie('ambienceVolume')) : 0.7); // Default to 100%
 
 const displayedText = ref('');
 let currentNodeId = ref(props.graphData.nodes[0].id);
@@ -64,6 +61,14 @@ let typingInterval = null;
 const displayChoices = ref(false);
 const currentChoices = ref([]);
 const selectedChoiceIndex = ref(0);
+
+
+//Audio bits.
+const volume = ref(getCookie('volume') ? parseFloat(getCookie('volume')) : 0);
+const musicVolume = ref(getCookie('musicVolume') ? parseFloat(getCookie('musicVolume')) : 0);
+const ambienceVolume = ref(getCookie('ambienceVolume') ? parseFloat(getCookie('ambienceVolume')) : 0);
+
+const hasVisited = getCookie('hasVisited'); //Used to set defaults of volumes at first moments.
 
 const typingSounds = [
   new Audio('/audio/sounds/typing1.ogg'),
@@ -107,9 +112,17 @@ onMounted(() => {
   }
 
   document.addEventListener('keydown', handleKeyPress);
-  updateVolume();
-  updateMusicVolume();
-  updateAmbienceVolume();
+
+  if (!hasVisited) { //does this cookie exist?
+    setCookie('hasVisited', true, 2)
+    volume.value = 1
+    musicVolume.value = 1
+    ambienceVolume.value = 0.7
+    updateVolume();
+    updateMusicVolume();
+    updateAmbienceVolume();
+  }
+  
 
   document.addEventListener('click', startMusicPlayback, { once: true });
 });
@@ -189,8 +202,9 @@ function toggleOptionsMenu() {
 
 // Function to update volume
 function updateVolume() {
-  typingSounds.forEach(sound => sound.volume = volume.value);
   dotSound.volume = volume.value;
+  typingSounds.forEach(sound => sound.volume = volume.value);
+  
 
   // Save volume to cookie
   setCookie('volume', volume.value, 2);
@@ -207,17 +221,18 @@ function updateAmbienceVolume() {
   ambienceAudio.volume = ambienceVolume.value;
 
   // Save music volume to cookie
-  setCookie('ambienceAudio', ambienceAudio.value, 2); 
+  setCookie('ambienceVolume', ambienceVolume.value, 2); 
 }
 
 function playSound(character) {
   if (character === '.' || character === '!' || character === '?') {
     dotSound.playbackRate = 1.5;
+    dotSound.volume = volume.value;
     dotSound.play();
   } else {
     const sound = typingSounds[Math.floor(Math.random() * typingSounds.length)];
     sound.playbackRate = 1;
-    sound.volume = volume.value;  // Apply volume control
+    sound.volume = volume.value;
     sound.play();
   }
 }
@@ -483,6 +498,7 @@ function typeHandler(){
 function selectChoice(index) {
   console.log('selectChoice : ' )
   console.log(index)
+  displayChoices.value = false
   selectedChoiceIndex.value = index;
   handleChoiceSelection();
 }
