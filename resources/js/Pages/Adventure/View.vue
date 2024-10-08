@@ -238,6 +238,20 @@ function playSound(character) {
 }
 
 function displayText(text, callback) {
+    
+  if (isTyping.value) {
+    clearInterval(typingInterval);
+    displayedText.value = getCurrentNode().data.text;
+    isTyping.value = false;
+    playSound('.');
+    
+    const currentNode = getCurrentNode();
+    if (currentNode && currentNode.type === 'choice' && currentNode.data.choices) {
+      displayChoicesMenu(currentNode.data.choices);
+    }
+    return
+  } 
+
   if (typingInterval) {
     clearInterval(typingInterval);
   }
@@ -265,6 +279,9 @@ function getCurrentNode() {
 }
 
 function getNextNode() {
+  //lazy workaround to stop it from proceeding to next node if we're still typing.
+  //maybe just add another && !isSkip() for when we implement skipping...
+  if (isTyping.value) { return; }
   const currentNode = getCurrentNode();
   console.log(currentNode.type);
   // Find the edge that starts from the current node
@@ -447,19 +464,7 @@ function handleKeyPress(event) {
     }
   } else {
     if (event.key === 'Enter' || event.key === 'z') {
-      if (isTyping.value) {
-        clearInterval(typingInterval);
-        displayedText.value = getCurrentNode().data.text;
-        isTyping.value = false;
-        playSound('.');
-        
-        const currentNode = getCurrentNode();
-        if (currentNode && currentNode.type === 'choice' && currentNode.data.choices) {
-          displayChoicesMenu(currentNode.data.choices);
-        }
-      } else {
         processCurrentNode();
-      }
     }
   }
 }
