@@ -281,7 +281,7 @@ function getCurrentNode() {
 function getNextNode() {
   //lazy workaround to stop it from proceeding to next node if we're still typing.
   //maybe just add another && !isSkip() for when we implement skipping...
-  if (isTyping.value) { return; }
+  //if (isTyping.value) { return; }
   const currentNode = getCurrentNode();
   console.log(currentNode.type);
   // Find the edge that starts from the current node
@@ -329,6 +329,7 @@ function findNodeByType(type) {
 function handleChoiceSelection() {
   const selectedChoice = currentChoices.value[selectedChoiceIndex.value];
   console.log('Selected choice:', selectedChoice);
+  displayChoices.value = false
 
   // Use the target node ID from the updated choice
   const targetNodeId = selectedChoice.target;
@@ -412,7 +413,7 @@ function loadProgress() {
 
 function processCurrentNode() {
   const currentNode = getCurrentNode();
-
+  isTyping.value = false;
   if (!currentNode) {
     console.error('No current node found.');
     return;
