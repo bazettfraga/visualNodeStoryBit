@@ -404,12 +404,12 @@ function processCurrentNode() {
   switch (currentNode.type) {
     case 'textInput':
       handleTextNode(currentNode);
-      proceedToNextNode();
+      getNextNode();
       break;
 
     case 'start':
       handleTextNode(currentNode);  // Ensure this is correct if the 'start' node contains text
-      proceedToNextNode();  // Move to the next node after processing the start node
+      getNextNode();
       break;
 
     case 'choice':
@@ -418,12 +418,12 @@ function processCurrentNode() {
 
     case 'redirect':
       handleRedirectNode(currentNode);
-      proceedToNextNode();
+      getNextNode();
       break;
 
     case 'keyAdder':
       handleKeyAdderNode(currentNode);
-      proceedToNextNode();
+      getNextNode();
       break;
       
     case 'stop':
@@ -434,16 +434,6 @@ function processCurrentNode() {
       console.error(`Unhandled node type: ${currentNode.type}`);
   }
   
-}
-
-function proceedToNextNode() {
-  const nextNode = getNextNode();  // Implement logic to fetch the next node in the flow
-  if (nextNode) {
-    setCurrentNode(nextNode);  // Set the new current node
-    processCurrentNode();  // Continue processing
-  } else {
-    console.error('No next node found.');
-  }
 }
 
 function handleKeyPress(event) {
